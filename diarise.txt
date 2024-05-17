@@ -1,0 +1,9 @@
+SPEAKER_00: this is the best liked control test we have so far so it will have to work
+SPEAKER_00: all right this is our third attempt to get a good a decent recording out of the two of us
+SPEAKER_01: yeah so the previous times it has been good but there's been times where we haven't been talking
+SPEAKER_00: yeah it's we we were trying to talk over each other to see what would happen
+SPEAKER_00: and surprise surprise it does not recognize our voices when we are talking very loudly over each other
+SPEAKER_00: so we have to do this again
+SPEAKER_01: yeah and this time we are going to make sure that one person talks
+SPEAKER_01: the Gap and then the other person talks and we're trying to be as clear as possible with no arms and URS which I just did is
+SPEAKER_00: this is the best liked control test we have so far so it will have to work
