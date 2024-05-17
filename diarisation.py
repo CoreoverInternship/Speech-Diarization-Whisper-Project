@@ -58,15 +58,17 @@ def speech_to_text(chunk):
 
     # dataset = load_dataset("distil-whisper/librispeech_long", "clean", split="validation")
     # sample = dataset[0]["audio"]
-    audio = audio_chunk_file
+    audio = audio_chunk_file.read()
+    audio_chunk_file.seek(0)
 
     result = pipe(audio, return_timestamps=True)
-    print(result["chunks"])
+    return result["text"]
+    # print(result["text"])
 
 # ========================================================================================================
 
 device = 'cuda'#for running on GPU
-batch_size = 4
+batch_size = 2
 compute_type = 'float16'
 
 audiopath = 'charm.wav'
@@ -96,7 +98,7 @@ diarization = whisperx.DiarizationPipeline(use_auth_token="hf_LLrNJKtREIBfhfwfyS
 
 diarized_segments = diarization(audio)
 
-print(diarized_segments)
+# print(diarized_segments)
 
 usable_data_segments = pd.DataFrame(diarized_segments)
 
@@ -115,6 +117,8 @@ for index, row in usable_data_segments.iterrows():
 
     if text == None:
         text = "-"
+    elif text == "Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.":
+        text = ""
     with open('diarise.txt', 'a') as f:
         f.write(row['speaker'] + ": " + text + "\n")
 
