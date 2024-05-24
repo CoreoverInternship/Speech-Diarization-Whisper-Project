@@ -9,6 +9,7 @@ from pydub import AudioSegment
 from pydub.utils import make_chunks
 import speech_recognition as sr
 import pandas as pd
+import torch
 import os
 # ========================================================================================================
 def record_audio(duration, sample_rate=44100, output_file="output.wav"):
@@ -46,14 +47,7 @@ def speech_to_text(audio_chunk):
     audio_chunk_file.seek(0)
 
 
-    # # print("got here")
-    # with sr.AudioFile(audio_chunk_file) as source:
-    #     audio = recgoniser.record(source)
-    # try:
-    #     text = recgoniser.recognize_google(audio)
-    #     return text
-    # except Exception as e:
-    #     print("Exception: " + str(e))
+  
     import torch
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
     from datasets import load_dataset
@@ -62,12 +56,14 @@ def speech_to_text(audio_chunk):
     
    
     pipe = pipeline("automatic-speech-recognition", model="quinnb/whisper-Large-v3-hindi")
-
+    # pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3")
 
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
+    # model_id = "openai/whisper-large-v3"
     model_id = "quinnb/whisper-Large-v3-hindi"
+
 
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
         model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True
@@ -104,10 +100,10 @@ def diarize(audiopath):
         pass
     audio = whisperx.load_audio(audiopath)
 
-
-
-    diarization = whisperx.DiarizationPipeline(use_auth_token="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",device=device)
-
+    diarization = whisperx.DiarizationPipeline(
+            use_auth_token="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",
+            device='cuda' if torch.cuda.is_available() else 'cpu'  # Check if GPU is available
+        )
     diarized_segments = diarization(audio)
 
     # print(diarized_segments)
@@ -148,62 +144,3 @@ elif(reordOrFile == "r"):
     print("diarizeing")
 
     
-
-audiopath = 'car.wav'
-
-# processAudio(audiopath)
-
-# model = Model.from_pretrained("pyannote/segmentation-3.0",use_auth_token="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")
-
-
-# audio = whisperx.load_audio(audiopath)
-
-# model = whisperx.load_model("large-v2",device,compute_type=compute_type)
-# v2 model is better is not specifying language
-
-
-
-    # print(row['speaker'] + ": " + text) 
-    # print(end_time)
-
-# print(diarized_segments)
-# print(diarized_segments[0]["start"])
-# print(diarized_segments[0]["end"])
-# for segment in diarized_segments:
-#     print(segment)
-#     print(segment[2])
-   
-
-# for segment in diarized_segments:
-#     chunk_size = segment["end"] - segment["start"]
-#     chunk = make_chunks(audio, chunk_size)
-
-#     speech_to_text(chunk, segment["speaker"])
-
-
-
-
-# print(diarized_segments)
-
-# speakerAndText = whisperx.assign_word_speakers(diarized_segments,transcript)
-
-# print(speakerAndText["segments"])
-
-# transcript code ----------------------------
-# model = whisperx.load_model("large-v2",device,compute_type=compute_type)
-# # v2 model is better is not specifying language
-
-# audio = whisperx.load_audio(audiopath)
-
-# transcript = model.transcribe(audio, batch_size=batch_size)
-
-# for segment in transcript["segments"]:
-#     print(segment["text"])
-#     print('\n')
-# transcript code ----------------------------
-
-
-
-
-# print(transcript["segments"])
-
