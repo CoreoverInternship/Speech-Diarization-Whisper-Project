@@ -11,6 +11,12 @@ import speech_recognition as sr
 import pandas as pd
 import torch
 import os
+
+import torch
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+from datasets import load_dataset
+
+from transformers import pipeline
 # ========================================================================================================
 def record_audio(duration, sample_rate=44100, output_file="output.wav"):
    
@@ -45,15 +51,6 @@ def speech_to_text(audio_chunk):
     audio_chunk_file = io.BytesIO()
     audio_chunk.export(audio_chunk_file, format="wav")
     audio_chunk_file.seek(0)
-
-
-  
-    import torch
-    from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-    from datasets import load_dataset
-
-    from transformers import pipeline
-    
    
     pipe = pipeline("automatic-speech-recognition", model="quinnb/whisper-Large-v3-hindi")
     # pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3")
@@ -95,7 +92,17 @@ def speech_to_text(audio_chunk):
     # print(result["text"])
 
 # ========================================================================================================
-def diarize(audiopath):
+def diarise(audiopath):
+    # print(audiopath)
+    foldername = audiopath.replace('audioFiles\\', '')
+    print("1: ")
+    print(foldername)
+    foldername = foldername.replace('.wav', '') 
+    print("2: ")
+    print(foldername)
+
+    os.makedirs(foldername, exist_ok=True)
+
     with open('diarise.txt', 'w', encoding='utf-8') as f:
         pass
     audio = whisperx.load_audio(audiopath)
@@ -121,6 +128,11 @@ def diarize(audiopath):
 
         audio_chunk = audioForConversion[start_time:end_time]
 
+
+        filename = row['label'] + "_" + foldername + ".wav"
+
+        audio_chunk.export(f"{foldername}/{filename}", format="wav")
+
         text = speech_to_text(audio_chunk)
 
         if text == None:
@@ -128,19 +140,34 @@ def diarize(audiopath):
         elif text == "Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.":
             text = ""
         with open('diarise.txt', 'a', encoding='utf-8') as f:
-            f.write(row['speaker'] + ": " + text + "\n")
+            f.write(row['speaker'] + ": " + text + " line:"+str(index+1)+"\n")
+        with open(f'{foldername}/transcript.txt','a', encoding='utf-8') as f:
+            f.write(text + "\n")
 
-device = 'cpu'#for running on GPU
+
+device = 'cuda'#for running on GPU
 batch_size = 2
 compute_type = 'float32'
-reordOrFile = input("use file input or record? f for file r  for record: ")
-if(reordOrFile == "f"):
-    file = input("what file?\n")
-    diarize("audioFiles/"+file)
-elif(reordOrFile == "r"):
-    duration = input("for how long?")
-    record_audio(duration)
-    diarize("output.wav")
-    print("diarizeing")
+# reordOrFile = input("use file input or record? f for file r  for record: ")
+
+
+directory = 'audioFiles'
+
+for file_name in os.listdir(directory):
+        if file_name.endswith('.wav'):
+            file_path = os.path.join(directory, file_name)
+            print(f"Processing {file_path}")
+            diarise(file_path)
+
+
+# diarise("audioFiles/car.wav")
+# if(reordOrFile == "f"):
+#     file = input("what file?\n")
+#     diarise("audioFiles/"+file)
+# elif(reordOrFile == "r"):
+#     duration = input("for how long?")
+#     record_audio(duration)
+#     diarise("output.wav")
+#     print("diarizeing")
 
     
