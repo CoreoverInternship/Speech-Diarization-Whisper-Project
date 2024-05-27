@@ -7,7 +7,7 @@ textData = {
     'transcript': []
 }
 
-directory_path = '/root/Speech_diarisation/NewData/NewData/Custom_Training_Set'
+directory_path = '/home/qbromley/corover/Speech-Diarization-Whisper-Project-1/Custom_Training_Set'
 
 # Iterating through the directory
 for filename in os.listdir(directory_path):
