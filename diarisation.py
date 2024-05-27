@@ -94,7 +94,7 @@ def speech_to_text(audio_chunk):
 # ========================================================================================================
 def diarise(audiopath):
     # print(audiopath)
-    foldername = audiopath.replace('audioFiles\\', '')
+    foldername = audiopath.replace('data/', '')
     print("1: ")
     print(foldername)
     foldername = foldername.replace('.wav', '') 
@@ -118,19 +118,21 @@ def diarise(audiopath):
     usable_data_segments = pd.DataFrame(diarized_segments)
 
     # print(usable_data_segments)
-
+    ind = 1
     for index, row in usable_data_segments.iterrows():
         start_time = row['start'] *1000
         # print(start_time)
         end_time = row['end'] *1000
-
+        print(end_time-start_time)
+        if(end_time - start_time) <= 500:
+            continue
         audioForConversion = AudioSegment.from_wav(audiopath)
 
         audio_chunk = audioForConversion[start_time:end_time]
 
 
-        filename = row['label'] + "_" + foldername + ".wav"
-
+        filename = str(ind) + "_" + foldername + ".wav"
+        ind += 1
         audio_chunk.export(f"{foldername}/{filename}", format="wav")
 
         text = speech_to_text(audio_chunk)
@@ -151,7 +153,7 @@ compute_type = 'float32'
 # reordOrFile = input("use file input or record? f for file r  for record: ")
 
 
-directory = 'audioFiles'
+directory = 'data'
 
 for file_name in os.listdir(directory):
         if file_name.endswith('.wav'):
