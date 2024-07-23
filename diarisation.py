@@ -97,7 +97,7 @@ def diarise(audiopath):
     audio = whisperx.load_audio(audiopath)
 
     diarization = whisperx.DiarizationPipeline(
-            use_auth_token="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",
+            use_auth_token="DIARIZATION_KEY",
             device='cuda' if torch.cuda.is_available() else 'cpu'  # Check if GPU is available
         )
     diarized_segments = diarization(audio)
