@@ -17,17 +17,6 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 from datasets import load_dataset
 
 from transformers import pipeline
-# ========================================================================================================
-def record_audio(duration, sample_rate=44100, output_file="output.wav"):
-   
-    print("Recording...")
-    audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=2, dtype=np.int16)
-    sd.wait() 
-    print("Recording complete. Saving file...")
-
-    write(output_file, sample_rate, audio_data)  
-    print(f"File saved as {output_file}")
-
 
 def mp3_to_wav(mp3_file_path):
     # Extract the directory and base name
@@ -150,7 +139,7 @@ def diarise(audiopath):
 device = 'cuda'#for running on GPU
 batch_size = 2
 compute_type = 'float32'
-# reordOrFile = input("use file input or record? f for file r  for record: ")
+# File = input("use file input or record? f for file: ")
 
 
 directory = 'data'
@@ -166,10 +155,6 @@ for file_name in os.listdir(directory):
 # if(reordOrFile == "f"):
 #     file = input("what file?\n")
 #     diarise("audioFiles/"+file)
-# elif(reordOrFile == "r"):
-#     duration = input("for how long?")
-#     record_audio(duration)
-#     diarise("output.wav")
-#     print("diarizeing")
+
 
     
